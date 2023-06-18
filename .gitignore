@@ -1,3 +1,6 @@
 *.log
 *.bin
+*.csv
+*.txt
+*.apk
 .deleted

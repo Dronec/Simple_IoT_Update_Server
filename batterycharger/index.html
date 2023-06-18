@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app" ontouchmove="">
+
+<head>
+    <style>
+        @charset "UTF-8";
+
+        [ng\:cloak],
+        [ng-cloak],
+        [data-ng-cloak],
+        [x-ng-cloak],
+        .ng-cloak,
+        .x-ng-cloak,
+        .ng-hide:not(.ng-hide-animate) {
+            display: none !important;
+        }
+
+        ng\:form {
+            display: block;
+        }
+
+        .ng-animate-shim {
+            visibility: hidden;
+        }
+
+        .ng-anchor {
+            position: absolute;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale = 1.0, user-scalable=no, viewport-fit=cover">
+    <title>Battery Charge App</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="#fff">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+</head>
+
+<body>
+    <div class="container">
+        <div class="contact"></div>
+        <div class="battery">
+            <div class="energy"></div>
+            <!-- <div class="cracks"></div> -->
+        </div>
+        <p class="percentage">0%</p>
+        <button id="resetBtn">Reset</button>
+        <button id="rechargeBtn">Recharge</button>
+    </div><br><br>
+    <script src="scripts.js"></script>
+</body>
+
+</html>
