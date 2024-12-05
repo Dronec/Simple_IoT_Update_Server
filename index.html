@@ -20,8 +20,8 @@
       var totalPage = 1;
       // In the main stylesheet are selections of colors used to highlight different content
       // currently these are cld oth and foo
-      var colorCounts = { cld: -1, foo: -1, oth: -1 };
-      var maxColorCounts = { cld: 4, foo: 4, oth: 4 };
+      var colorCounts = { cld: -1, foo: -1, oth: -1, bar: -1, bea: -1, baz: -1 };
+      var maxColorCounts = { cld: 4, foo: 4, oth: 4, bar: 4, bea: 4, baz: 4 };
 
       function loadPage(div, page) {
         // For each page load up an <li> into the <ul> on the page so that the carousel will work
@@ -63,7 +63,13 @@
           // Based on the known class names 'cld', 'foo' and 'oth' (default) work out a colour scheme class
           // for the segement e.g. cld1 for the first 'cld' cld2 for the second 'cld' etc. Each colour scheme
           // has it's own counters
-          var colourScheme = $(this).hasClass('cld') ? 'cld' : ($(this).hasClass('foo') ? 'foo' : 'oth');
+          var colourScheme = 
+    $(this).hasClass('cld') ? 'cld' :
+    ($(this).hasClass('foo') ? 'foo' :
+    ($(this).hasClass('oth') ? 'oth' :
+    ($(this).hasClass('bar') ? 'bar' :
+    ($(this).hasClass('bea') ? 'bea' :
+    ($(this).hasClass('baz') ? 'baz' : '')))));
           colorCounts[colourScheme] = (colorCounts[colourScheme] + 1) % maxColorCounts[colourScheme];
 
           // Create the segment the known class 'nomargin' allows content (e.g. images) to fill segments

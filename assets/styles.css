@@ -195,6 +195,21 @@ a:focus { outline: none; } /* dotted box hack for FF */
 .foo3 { background-color : #31663a }
 .foo4 { background-color : #5d9b5d }
 
+.bar1 { background-color : #8b9474 }
+.bar2 { background-color : #6cae75 }
+.bar3 { background-color : #8bbd8b }
+.bar4 { background-color : #c1cc99 }
+
+.bea1 { background-color : #272d2d }
+.bea2 { background-color : #a39ba8 }
+.bea3 { background-color : #b8c5d6 }
+.bea4 { background-color : #edf5fc }
+
+.baz1 { background-color : #9bb291 }
+.baz2 { background-color : #c4f4c7 }
+.baz3 { background-color : #c7ffda }
+.baz4 { background-color : #d9fff8 }
+
 .clear 
 {
     clear: both;
