@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="bg-gray-100 p-8">
+  <div class="max-w-4xl mx-auto bg-white shadow-md rounded p-6" id="invoiceContent">
+    <!-- Header -->
+    <div class="mb-2 text-right">
+      <h2 contenteditable class="text-xl font-bold">Andrey Baranov</h2>
+      <p contenteditable>54/41 Bath rd.<br>Kirrawee NSW 2232<br>Australia<br>ABN: 70 872 008 232</p>
+    </div>
+    <div class="text-right mb-6">
+      <p class="text-4xl font-semibold text-gray-800">Tax Invoice</p>
+      <p class="font-semibold">#<span contenteditable>10001</span><br></p><p>
+         Invoice Date: <span contenteditable id="invoiceDate"></span><br>
+Invoice Due: <span contenteditable id="invoiceDue"></span></p>
+    </div>
+
+    <hr class="border-t border-gray-300 my-4">
+
+    <!-- Client Info -->
+    <div class="mb-4">
+      <h4 contenteditable class="text-2xl font-semibold">Oak Project Services</h4>
+      <p contenteditable>ABN: 42661981154<br>Australia</p>
+    </div>
+
+    <!-- Line Items Table -->
+    <div class="overflow-x-auto">
+      <table class="min-w-full border text-sm" id="invoiceTable">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="p-2 border text-center italic">Item / Description</th>
+            <th class="p-2 border text-right italic">Unit Price</th>
+            <th class="p-2 border text-right italic">Quantity</th>
+            <th class="p-2 border text-right italic">Total</th>
+            <th class="p-2 border print:hidden"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td contenteditable class="p-2 border">Service</td>
+            <td contenteditable class="p-2 border unit-price text-right">0.00</td>
+            <td contenteditable class="p-2 border quantity text-right">1</td>
+            <td class="p-2 border total text-right">0.00</td>
+            <td class="p-2 border text-center print:hidden"><button onclick="removeRow(this)">&times;</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <button onclick="addRow()" class="mt-2 text-blue-600 font-semibold">+ Add Line</button>
+
+    <!-- Totals -->
+    <div class="grid grid-cols-5 mt-4">
+      <div class="col-span-3"></div>
+      <div class="col-span-2 space-y-1 text-right">
+        <div class="flex justify-between">
+          <span class="text-right mr-4 font-semibold">Subtotal</span>
+          <span id="subtotal">$0.00</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-right mr-4 font-semibold">Total</span>
+          <span id="total">$0.00</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-right mr-4 font-semibold">Amount Paid</span>
+          <span contenteditable>$0.00</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-right mr-4 font-semibold">Amount Due</span>
+          <span class="font-semibold" id="amountDue">$0.00</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="mt-4">
+      <label class="block font-semibold mb-1">Notes</label>
+      <div contenteditable class="w-full p-2 border rounded h-30">Please pay to:<br>Andrey Baranov<br>BSB: 702-746<br>Account No: 400016394</div>
+    </div>
+
+    <!-- Footer Actions -->
+    <div class="mt-6 flex justify-between">
+      <button class="bg-red-500 text-white px-4 py-2 rounded" onclick="toggleGST()">Show GST</button>
+      <button class="bg-blue-600 text-white px-4 py-2 rounded" onclick="createPDF()">Create Invoice</button>
+    </div>
+  </div>
+
+  <script>
+    function addRow() {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td contenteditable class="p-2 border">Service</td>
+        <td contenteditable class="p-2 border unit-price text-right">0.00</td>
+        <td contenteditable class="p-2 border quantity text-right">1</td>
+        <td class="p-2 border total text-right">0.00<button onclick="removeRow(this)">&times;</button></td>
+        <td class="p-2 border text-center"><button onclick="removeRow(this)">&times;</button></td>
+      `;
+      document.querySelector('#invoiceTable tbody').appendChild(row);
+      recalculate();
+    }
+
+    function removeRow(button) {
+      const row = button.closest('tr');
+      row.remove();
+      recalculate();
+    }
+
+    function recalculate() {
+      let subtotal = 0;
+      document.querySelectorAll('#invoiceTable tbody tr').forEach(row => {
+        const price = parseFloat(row.querySelector('.unit-price').innerText || '0') || 0;
+        const quantity = parseFloat(row.querySelector('.quantity').innerText || '0') || 0;
+        const total = price * quantity;
+        row.querySelector('.total').innerText = `$${total.toFixed(2)}`;
+        subtotal += total;
+      });
+      document.getElementById('subtotal').innerText = `$${subtotal.toFixed(2)}`;
+      document.getElementById('total').innerText = `$${subtotal.toFixed(2)}`;
+      document.getElementById('amountDue').innerText = `$${subtotal.toFixed(2)}`;
+    }
+
+    document.addEventListener('input', e => {
+      if (e.target.classList.contains('unit-price') || e.target.classList.contains('quantity')) {
+        recalculate();
+      }
+    });
+
+    function toggleGST() {
+      alert("GST toggle functionality not yet implemented.");
+    }
+
+async function createPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  const invoice = document.querySelector("#invoiceContent");
+
+  // Clone the node to avoid modifying the actual UI
+  const clone = invoice.cloneNode(true);
+  clone.style.boxShadow = "none";
+  clone.style.padding = "40px";
+  clone.style.margin = "0";
+  clone.style.background = "#ffffff";
+  clone.style.width = "800px"; // consistent width
+  clone.style.maxWidth = "none";
+
+  // Create a container for rendering off-screen
+  const container = document.createElement("div");
+  container.style.position = "fixed";
+  container.style.top = "-10000px";
+  container.appendChild(clone);
+  document.body.appendChild(container);
+
+  // Hide buttons in the clone
+  clone.querySelectorAll('button').forEach(btn => btn.style.display = 'none');
+
+// Remove the last column from table (Total column is last visible)
+  clone.querySelectorAll('table thead tr').forEach(row => row.lastElementChild?.remove());
+  clone.querySelectorAll('table tbody tr').forEach(row => row.lastElementChild?.remove());
+
+  // Render the clone to canvas
+  const canvas = await html2canvas(clone, {
+    backgroundColor: "#ffffff",
+    scale: 2,
+    useCORS: true
+  });
+
+  const imgData = canvas.toDataURL("image/png");
+ const imgProps = await new Promise(resolve => {
+    const i = new Image();
+    i.onload = () => resolve({ width: i.width, height: i.height });
+    i.src = imgData;
+  });
+
+  const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+
+  const imgWidth = pageWidth;
+  const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+
+  let position = 0;
+  let heightLeft = imgHeight;
+
+  pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+  heightLeft -= pageHeight;
+
+  while (heightLeft > 0) {
+    position -= pageHeight;
+    pdf.addPage();
+    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+  }
+
+  pdf.save("invoice.pdf");
+  document.body.removeChild(container);
+}
+
+
+    window.onload = () => {
+  const today = new Date();
+  const dueDate = new Date();
+  dueDate.setDate(today.getDate() + 14);
+
+  const formatDate = (date) => {
+    return date.toLocaleDateString('en-AU', {
+      day: '2-digit', month: '2-digit', year: 'numeric'
+    });
+  };
+
+  document.getElementById('invoiceDate').innerText = formatDate(today);
+  document.getElementById('invoiceDue').innerText = formatDate(dueDate);
+
+  recalculate();
+};
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</body>
+</html>
